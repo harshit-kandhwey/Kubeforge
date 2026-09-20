@@ -1,0 +1,13 @@
+# Force LF regardless of a checkout machine's core.autocrlf. Shell scripts and
+# manifests run on Linux nodes and CI, where a stray CR breaks shebangs,
+# heredocs and YAML block scalars.
+* text=auto eol=lf
+
+*.sh text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.tf text eol=lf
+*.tfvars text eol=lf
+*.toml text eol=lf

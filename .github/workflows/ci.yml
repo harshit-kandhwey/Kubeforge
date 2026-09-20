@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "feature/**"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.11"
+  GITLEAKS_VERSION: "8.18.4"
+
+jobs:
+  # Blocking: formatting and YAML validity from .pre-commit-config.yaml, plus a
+  # full-history secret scan. Terraform, Helm and manifest jobs are added in the
+  # phase that introduces those files (see ROADMAP.md); adding them earlier
+  # would only report a false green.
+  hygiene:
+    name: Hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: pip install pre-commit
+      # The pre-commit gitleaks hook only inspects staged changes, so under
+      # --all-files it would pass without scanning anything. It is skipped here
+      # and the next step does the real scan.
+      - name: pre-commit (all files)
+        run: pre-commit run --all-files --show-diff-on-failure
+        env:
+          SKIP: gitleaks
+      - name: gitleaks (full history)
+        run: |
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" | tar -xz gitleaks
+          ./gitleaks detect --source . --redact --verbose

@@ -1,0 +1,54 @@
+# Secrets and environment files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Kubernetes and cloud credentials
+kubeconfig
+kubeconfig*
+*.kubeconfig
+.kube/
+
+# Terraform (the lockfile .terraform.lock.hcl IS committed)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+tfplan
+*.tfplan
+
+# Helm and packaging output
+charts/**/charts/*.tgz
+*.tgz
+
+# Generated secrets and rendered manifests
+secrets/
+*.secret.yaml
+rendered/
+
+# Dependencies and caches
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.cache/
+
+# Editors and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

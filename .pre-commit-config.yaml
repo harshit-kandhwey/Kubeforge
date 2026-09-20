@@ -1,0 +1,27 @@
+# pre-commit run --all-files    (first time)
+# pre-commit install             (installs the git hook)
+#
+# CI runs this file too (the gitleaks hook only scans staged changes, so CI
+# scans full history in its own step). Terraform, Helm and manifest hooks are added in the phase that introduces those files, not
+# before: a hook with nothing to check would only report a false green.
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ["--maxkb=2000"]
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.1.0
+    hooks:
+      - id: prettier
+        types_or: [markdown, yaml, json]
